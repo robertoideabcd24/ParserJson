@@ -65,7 +65,11 @@ public class ParserJSON {
     private Empleado parsearEmpleado(JsonObject empleadoObj) {
         Empleado empleado = new Empleado();
 
-        // Datos básicos del empleado 
+        // Datos básicos del empleado
+        if (empleadoObj.containsKey("id")) {
+            empleado.setId(empleadoObj.getInt("id"));
+        }
+
         if (empleadoObj.containsKey("firstName")) {
             empleado.setNombre(empleadoObj.getString("firstName"));
         } else if (empleadoObj.containsKey("nombre")) {
@@ -147,19 +151,30 @@ public class ParserJSON {
             List<Empleado> empleadosExistentes = obtenerEmpleados();
             System.out.println("Empleados existentes: " + empleadosExistentes.size());
 
-            // Agregar el nuevo empleado a la lista existente
+            // 🔹 Generar nuevo ID
+            int nuevoId = 1;
+            if (!empleadosExistentes.isEmpty()) {
+                int maxId = empleadosExistentes.stream()
+                        .mapToInt(Empleado::getId)
+                        .max()
+                        .orElse(0);
+                nuevoId = maxId + 1;
+            }
+            nuevoEmpleado.setId(nuevoId);
+
+            // Agregar el nuevo empleado
             empleadosExistentes.add(nuevoEmpleado);
             System.out.println("Total de empleados después de agregar: " + empleadosExistentes.size());
 
-            // Guardar todos los empleados (existentes + nuevo)
             guardarEmpleados(empleadosExistentes);
-            System.out.println("Empleado agregado exitosamente.");
+            System.out.println("Empleado agregado exitosamente con ID: " + nuevoId);
 
         } catch (Exception e) {
             System.out.println("Error al agregar empleado: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     private void guardarEmpleados(List<Empleado> empleados) {
         try (JsonWriter writer = Json.createWriter(new FileOutputStream(ARCHIVO_JSON))) {
@@ -168,6 +183,7 @@ public class ParserJSON {
 
             for (Empleado empleado : empleados) {
                 JsonObjectBuilder empleadoBuilder = Json.createObjectBuilder()
+                        .add("id", empleado.getId())
                         .add("firstName", empleado.getNombre() != null ? empleado.getNombre() : "")
                         .add("lastName", empleado.getApellido() != null ? empleado.getApellido() : "")
                         .add("age", empleado.getEdad());

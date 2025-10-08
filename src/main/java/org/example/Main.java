@@ -5,62 +5,134 @@ import org.example.modelo.Empleado;
 import org.example.modelo.Telefono;
 import org.example.parser.ParserJSON;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
         ParserJSON parser = new ParserJSON();
+        boolean salir = false;
+        int opcion;
 
-        System.out.println("=== SISTEMA DE GESTIÓN DE EMPLEADOS ===");
+        System.out.println("Gestion de mepleados");
+        while(!salir){
+            System.out.println("MENÚ");
+            System.out.println("1. Agregar empleado");
+            System.out.println("2. Eliminar empeldao");
+            System.out.println("3. Modificar empleado");
+            System.out.println("4. Buscar empleado");
+            System.out.println("5. Mostrar todos los empleados");
+            System.out.println("6. Salir");
+            opcion = leerEntero();
 
-        // Mostrar empleados existentes 
-        System.out.println("\n--- EMPLEADOS EXISTENTES ---");
-        parser.mostrarEmpleados();
-
-        // Agregar un nuevo empleado directamente 
-        System.out.println("\n--- AGREGANDO NUEVO EMPLEADO ---");
-        agregarEmpleadoPrueba(parser);
-
-        // Mostrar empleados después de agregar
-        System.out.println("\n--- EMPLEADOS DESPUÉS DE AGREGAR ---");
-        parser.mostrarEmpleados();
+            switch (opcion){
+                case 1:
+                    agregarEmpleado(parser);
+                case 2:
+                    System.out.println("Función ELIMINAR aún no implementada.");
+                    break;
+                case 3:
+                    System.out.println("Función MODIFICAR aún no implementada.");
+                    break;
+                case 4:
+                    System.out.println("Función BUSCAR aún no implementada.");
+                    break;
+                case 5:
+                    parser.mostrarEmpleados();
+                    break;
+                case 6:
+                    salir = true;
+                    System.out.println("Saliendo del sistema...");
+                    break;
+                default:
+                    System.out.println("Opción no válida. Intente de nuevo.");
+                    break;
+            }//fin case
+        }
     }
 
-    private static void agregarEmpleadoPrueba(ParserJSON parser) {
-        // Primer empleado
-        Empleado empleado1 = new Empleado();
-        empleado1.setNombre("Maria");
-        empleado1.setApellido("Gonzalez");
-        empleado1.setEdad(30);
+    private static void agregarEmpleado(ParserJSON parser) {
+        Empleado empleado = new Empleado();
+        Direccion direccion;
+        ArrayList<Telefono> telefonos = new ArrayList<>();
 
-        Direccion direccion1 = new Direccion("Av. Reforma 123", "Ciudad de México", "CDMX", 06600L);
-        empleado1.setDireccion(direccion1);
+        String calle, ciudad, estado, tipo, numero, respuesta;
+        Long cp;
 
-        ArrayList<Telefono> telefonos1 = new ArrayList<>();
-        telefonos1.add(new Telefono("mobile", "55 1234 5678"));
-        telefonos1.add(new Telefono("work", "55 8765 4321"));
-        empleado1.setTelefonos(telefonos1);
+        System.out.println("Agregando nuevo empleado...");
 
-        System.out.println("Agregando empleado 1: " + empleado1.getNombre() + " " + empleado1.getApellido());
-        parser.agregarEmpleado(empleado1);
+        System.out.print("Nombre: ");
+        empleado.setNombre(scanner.nextLine());
 
-        // Segundo empleado
-        Empleado empleado2 = new Empleado();
-        empleado2.setNombre("Carlos");
-        empleado2.setApellido("Lopez");
-        empleado2.setEdad(28);
+        System.out.print("Apellido: ");
+        empleado.setApellido(scanner.nextLine());
 
-        Direccion direccion2 = new Direccion("Calle Juarez 456", "Guadalajara", "Jalisco", 44100L);
-        empleado2.setDireccion(direccion2);
+        System.out.print("Edad: ");
+        empleado.setEdad(leerEntero());
 
-        ArrayList<Telefono> telefonos2 = new ArrayList<>();
-        telefonos2.add(new Telefono("home", "33 5555 8888"));
-        telefonos2.add(new Telefono("mobile", "33 9999 1111"));
-        empleado2.setTelefonos(telefonos2);
+        System.out.println("Direccion");
+        System.out.print("Calle: ");
+        calle = scanner.nextLine();
 
-        System.out.println("Agregando empleado 2: " + empleado2.getNombre() + " " + empleado2.getApellido());
-        parser.agregarEmpleado(empleado2);
+        System.out.print("Ciudad: ");
+        ciudad = scanner.nextLine();
+
+        System.out.print("Estado: ");
+        estado = scanner.nextLine();
+
+        System.out.print("Código Postal: ");
+        cp = leerLong();
+
+        direccion = new Direccion(calle, ciudad, estado, cp);
+        empleado.setDireccion(direccion);
+
+        System.out.println("Telefonos");
+
+        while(true){
+            System.out.println("Tipo de telefono (home, mobile, work, etc): ");
+            tipo = scanner.nextLine();
+
+            System.out.print("Numero: ");
+            numero = scanner.nextLine();
+            telefonos.add(new Telefono(tipo, numero));
+
+            System.out.println("¿Deseas agregar otro telefono (s/n): ");
+            respuesta = scanner.nextLine();
+
+            if(!respuesta.equalsIgnoreCase("s")){
+                break;
+            }
+        }// fin while
+
+        empleado.setTelefonos(telefonos);
+        System.out.println("Guardando empleado...");
+        parser.agregarEmpleado(empleado);
+    }
+
+    private static int leerEntero(){
+        String entrada;
+        while(true){
+            try{
+                entrada = scanner.nextLine();
+                return Integer.parseInt(entrada);
+            }catch (NumberFormatException e){
+                System.out.println("Ingresar un número valido: ");
+            }
+        }
+    }//fin del metodo leer entero
+
+    private static long leerLong(){
+        String entrada;
+        while(true){
+            try{
+                entrada = scanner.nextLine();
+                return Long.parseLong(entrada);
+            }catch (NumberFormatException e){
+                System.out.println("Ingresar un número valido: ");
+            }
+        }
     }
 
 

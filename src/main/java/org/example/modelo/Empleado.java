@@ -3,6 +3,7 @@ package org.example.modelo;
 import java.util.List;
 
 public class Empleado {
+    private int id;
     private String nombre;
     private String apellido;
     private int edad;
@@ -12,12 +13,21 @@ public class Empleado {
     public Empleado() {
     }
 
-    public Empleado(String nombre, String apellido, int edad, Direccion direccion, List<Telefono> telefonos) {
+    public Empleado(int id,String nombre, String apellido, int edad, Direccion direccion, List<Telefono> telefonos) {
+        this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.edad = edad;
         this.direccion = direccion;
         this.telefonos = telefonos;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -63,6 +73,7 @@ public class Empleado {
     @Override
     public String toString() {
         return "Empleado{" +
+                "id='" + id + '\'' +
                 "nombre='" + nombre + '\'' +
                 ", apellido='" + apellido + '\'' +
                 ", edad=" + edad +
