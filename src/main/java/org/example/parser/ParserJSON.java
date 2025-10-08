@@ -8,6 +8,7 @@ import org.example.modelo.Telefono;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class ParserJSON {
 
@@ -225,35 +226,147 @@ public class ParserJSON {
             System.out.println("Error al guardar empleados: " + e.getMessage());
             e.printStackTrace();
         }
-    }
+    }// fin del metodo guardarEmpleados
 
-    public void mostrarEmpleados() {
+    public void todosLosEmpleados() {
         List<Empleado> empleados = obtenerEmpleados();
         if (empleados.isEmpty()) {
             System.out.println("No hay empleados registrados.");
             return;
         }
 
-        System.out.println("=== LISTA DE EMPLEADOS ===");
+        System.out.println("LISTA DE EMPLEADOS");
         for (int i = 0; i < empleados.size(); i++) {
-            Empleado emp = empleados.get(i);
             System.out.println("Empleado #" + (i + 1));
-            System.out.println("Nombre: " + emp.getNombre() + " " + emp.getApellido());
-            System.out.println("Edad: " + emp.getEdad());
+            mostrarEmpleado(empleados.get(i));
 
-            if (emp.getDireccion() != null) {
-                System.out.println("Dirección: " + emp.getDireccion().getCalle() + ", " +
-                        emp.getDireccion().getCiudad() + ", " + emp.getDireccion().getEstado() +
-                        " CP: " + emp.getDireccion().getCp());
-            }
-
-            if (emp.getTelefonos() != null && !emp.getTelefonos().isEmpty()) {
-                System.out.println("Teléfonos:");
-                for (Telefono tel : emp.getTelefonos()) {
-                    System.out.println("  " + tel.getTipo() + ": " + tel.getNumero());
-                }
-            }
-            System.out.println("-----------------------------");
         }
     }
+// fin del metodo todosLosEmpleados
+
+    public Empleado busacarEmpleadoPorId(int id){
+        List<Empleado> empleados = obtenerEmpleados();
+        for(Empleado emp : empleados){
+            if(emp.getId() == id){
+                return emp;
+            }
+        }
+        return null;
+    }// fin del metodo busacarEmpleadoPorId
+
+    public void mostrarEmpleado(Empleado emp) {
+        if (emp == null) {
+            System.out.println("Empleado no encontrado.");
+            return;
+        }
+
+        System.out.println("ID: " + emp.getId());
+        System.out.println("Nombre: " + emp.getNombre() + " " + emp.getApellido());
+        System.out.println("Edad: " + emp.getEdad());
+
+        if (emp.getDireccion() != null) {
+            System.out.println("Dirección: " + emp.getDireccion().getCalle() + ", " +
+                    emp.getDireccion().getCiudad() + ", " + emp.getDireccion().getEstado() +
+                    " CP: " + emp.getDireccion().getCp());
+        }
+
+        if (emp.getTelefonos() != null && !emp.getTelefonos().isEmpty()) {
+            System.out.println("Teléfonos: ");
+            for (Telefono tel : emp.getTelefonos()) {
+                System.out.println("  " + tel.getTipo() + ": " + tel.getNumero());
+            }
+        }
+    }// fin del metodo mostrarEmpleado
+
+    public void modificarEmpleado(int id) {
+        List<Empleado> empleados = obtenerEmpleados();
+        Empleado emp = null;
+        String nombre, apellido, edadStr, calle, ciudad, estado, cpStr, resp, tipo, numero, otro;
+
+        for (Empleado e : empleados) {
+            if (e.getId() == id) {
+                emp = e;
+                break;
+            }
+        }
+
+        if (emp == null) {
+            System.out.println("Empleado con ID " + id + " no encontrado.");
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Modificando empleado con ID " + id);
+        System.out.println("Dejar vacío para mantener valor actual.");
+
+        System.out.print("Nombre (" + emp.getNombre() + "): ");
+        nombre = scanner.nextLine();
+        if (!nombre.isBlank()) emp.setNombre(nombre);
+
+        System.out.print("Apellido (" + emp.getApellido() + "): ");
+        apellido = scanner.nextLine();
+        if (!apellido.isBlank()) emp.setApellido(apellido);
+
+        System.out.print("Edad (" + emp.getEdad() + "): ");
+        edadStr = scanner.nextLine();
+        if (!edadStr.isBlank()) emp.setEdad(Integer.parseInt(edadStr));
+
+        // Dirección
+        if (emp.getDireccion() != null) {
+            System.out.print("Calle (" + emp.getDireccion().getCalle() + "): ");
+            calle = scanner.nextLine();
+            if (!calle.isBlank()) emp.getDireccion().setCalle(calle);
+
+            System.out.print("Ciudad (" + emp.getDireccion().getCiudad() + "): ");
+            ciudad = scanner.nextLine();
+            if (!ciudad.isBlank()) emp.getDireccion().setCiudad(ciudad);
+
+            System.out.print("Estado (" + emp.getDireccion().getEstado() + "): ");
+            estado = scanner.nextLine();
+            if (!estado.isBlank()) emp.getDireccion().setEstado(estado);
+
+            System.out.print("Código Postal (" + emp.getDireccion().getCp() + "): ");
+            cpStr = scanner.nextLine();
+            if (!cpStr.isBlank()) emp.getDireccion().setCp(Long.parseLong(cpStr));
+        }
+
+        // Teléfonos
+        System.out.print("Desea modificar teléfonos? (s/n): ");
+        resp = scanner.nextLine();
+        if (resp.equalsIgnoreCase("s")) {
+            ArrayList<Telefono> nuevosTelefonos = new ArrayList<>();
+            while (true) {
+                System.out.print("Tipo de teléfono: ");
+                tipo = scanner.nextLine();
+                System.out.print("Número: ");
+                numero = scanner.nextLine();
+                nuevosTelefonos.add(new Telefono(tipo, numero));
+
+                System.out.print("Agregar otro teléfono? (s/n): ");
+                otro = scanner.nextLine();
+                if (!otro.equalsIgnoreCase("s")) break;
+            }
+            emp.setTelefonos(nuevosTelefonos);
+        }
+
+        // Guardar cambios
+        guardarEmpleados(empleados);
+        System.out.println("Empleado modificado exitosamente.");
+    }// fin del metodo modificarEmpleado
+
+
+    public void eliminarEmpleado(int id) {
+        List<Empleado> empleados = obtenerEmpleados();
+        boolean eliminado = empleados.removeIf(emp -> emp.getId() == id);
+
+        if (eliminado) {
+            guardarEmpleados(empleados);
+            System.out.println("Empleado con ID " + id + " eliminado correctamente.");
+        } else {
+            System.out.println("Empleado con ID " + id + " no encontrado.");
+        }
+    }// fin del metodo eliminarEmpleado
+
+
+
 }

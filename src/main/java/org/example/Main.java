@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         ParserJSON parser = new ParserJSON();
         boolean salir = false;
-        int opcion;
+        int opcion, idModificar;
 
         System.out.println("Gestion de mepleados");
         while(!salir){
@@ -31,16 +31,20 @@ public class Main {
                 case 1:
                     agregarEmpleado(parser);
                 case 2:
-                    System.out.println("Función ELIMINAR aún no implementada.");
+                    System.out.print("Ingrese ID del empleado a eliminar: ");
+                    int idEliminar = leerEntero();
+                    parser.eliminarEmpleado(idEliminar);
                     break;
                 case 3:
-                    System.out.println("Función MODIFICAR aún no implementada.");
+                    System.out.print("Ingrese ID del empleado a modificar: ");
+                    idModificar = leerEntero();
+                    parser.modificarEmpleado(idModificar);
                     break;
                 case 4:
-                    System.out.println("Función BUSCAR aún no implementada.");
+                    buscarEmpleado(parser);
                     break;
                 case 5:
-                    parser.mostrarEmpleados();
+                    parser.todosLosEmpleados();
                     break;
                 case 6:
                     salir = true;
@@ -133,6 +137,20 @@ public class Main {
                 System.out.println("Ingresar un número valido: ");
             }
         }
+    }// fin del metodo leerLong
+
+    private static void buscarEmpleado(ParserJSON parser){
+        Empleado emp;
+        int id;
+
+        System.out.println("Buscar empleado");
+        parser.todosLosEmpleados();
+
+        System.out.print("Ingresar ID del empleado: ");
+        id = leerEntero();
+        emp = parser.busacarEmpleadoPorId(id);
+        parser.mostrarEmpleado(emp);
+
     }
 
 
